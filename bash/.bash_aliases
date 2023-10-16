@@ -9,6 +9,7 @@ alias .......="cd ../../../../../.."
 # ls
 alias l="ls -lhAp"
 alias ll="ls -lhp"
+alias lsd='ls $(find . -maxdepth 1 -type d | sed "s/\.\///") -ld'
 
 # cd and l subsequently
 cl() {
@@ -19,6 +20,13 @@ cl() {
 alias rm="rm -i"
 alias mv="mv -i"
 alias cp="cp -i"
+
+# swap two files
+swap()
+{
+    local TMPFILE=tmp.$$
+    mv "$1" $TMPFILE && mv "$2" "$1" && mv $TMPFILE "$2"
+}
 
 # create a backup
 bak() {
@@ -143,6 +151,9 @@ alias grepc='grep -rn --include "*.c?" --include "*.cpp" --include "*.h" --inclu
 # grep in bash files
 alias grepsh='grep -rn --include "*.sh"'
 
+# JSON pretty print
+alias jsonpp="python -m json.tool"
+
 # directories
 alias src="cd ~/src"
 alias work="cd ~/work"
@@ -154,6 +165,22 @@ alias bs="source ~/.bashrc"
 
 # nvidia
 alias smi="nvidia-smi"
+alias showgpu='echo $CUDA_VISIBLE_DEVICES'
+setgpu() {
+    export CUDA_VISIBLE_DEVICES=$1
+    if [ -z $1 ]; then
+        return
+    fi
+    if [ $1 == -1 ]; then
+        export DISABLE_CUDA=1
+    elif [ ! -z $DISABLE_CUDA ] && [ $DISABLE_CUDA == 1 ]; then
+        export DISABLE_CUDA=0
+    fi
+}
+
+# screen
+alias sls="screen -ls"
+alias sr="screen -r"
 
 # git
 alias gb="git branch"
@@ -167,3 +194,14 @@ alias gc="git commit"
 alias gr="git rebase"
 alias gch="git checkout"
 alias gst="git status"
+
+gdb() {
+    # (g)it (d)iff (b)ranches
+    git log --left-right --graph --cherry-pick --oneline ${1}...${2}
+}
+
+# Docker
+alias dil="docker image list"
+alias dcl="docker container list"
+alias dka='docker kill $(docker ps -q)'
+alias dra='docker rm $(docker ps -a -q)'
